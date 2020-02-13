@@ -1,38 +1,38 @@
-import com.opencsv.CSVReader;
-import com.opencsv.exceptions.CsvException;
+import com.google.gson.Gson;
+import com.google.gson.stream.JsonReader;
 import com.opencsv.exceptions.CsvValidationException;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.List;
+
+
 
 public class Main {
 
-  public static void main(String[] args) {
-    try {
-      CSVReader reader = new CSVReader(new FileReader("src/data/SEOExample.csv"));
 
 
-      List<String[]> records = reader.readAll();
+  public static void main(String[] args) throws IOException, CsvValidationException {
+    // Literally just calls our parser right now (....and is called for tests)
+    CsvParser csvP = new CsvParser("src/Data/bookstore_report2.csv");
+    csvP.printCsv();
+    csvP.addBooksToDB();
 
-      Iterator<String[]> iterator = records.iterator();
-      while (iterator.hasNext()) {
-        System.out.println(Arrays.toString(iterator.next()));
-      }
+    // Load the json
+        /*
+        1. Create instance of GSON
+        2. Create a JsonReader object using FileReader
+        3. Array of class instances of AuthorParser, assign data from our JsonReader
+        4. foreach loop to check data
+         */
+    Gson gson = new Gson();
+    JsonReader jread = new JsonReader(new FileReader("src/Data/authors.json"));
+    AuthorParser[] authors = gson.fromJson(jread, AuthorParser[].class);
 
-      // close the file
-      reader.close();
-
-    } catch (FileNotFoundException e) {
-      e.printStackTrace();
-    } catch (CsvValidationException e) {
-      e.printStackTrace();
-    } catch (IOException e) {
-      e.printStackTrace();
-    } catch (CsvException e) {
-      e.printStackTrace();
+    for (var element : authors) {
+      System.out.println(element.getName());
+      //DatabaseAgent.insertAuthorIntoDb(element);
     }
   }
+
 }
+
+
